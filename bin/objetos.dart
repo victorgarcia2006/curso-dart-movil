@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+//Polimorfismo
 abstract class RemoteResource {
-  Future<void> fetch(); // <- Método asíncrono
+  Future<void> fetch();
 }
 
 class Todo {
-  //¿Qué atributos va a tener mi clase
+  //Atributos
   int _id;
   String _title;
   bool _completed;
@@ -19,12 +20,12 @@ class Todo {
   String get title => _title;
   bool get completed => _completed;
 
-  //Factory -> Constructor especial
+  //Constructor especial: Un constructor que se ejecuta antes de que se cree el objeto
   factory Todo.fromJson(Map<String, dynamic> json){
     return Todo(
-      json['id'],
-      json['title'],
-      json['completed'],
+      json['id'], // _id = json['id']
+      json['title'], // _title = json['title']
+      json['completed'] // _completed = json['completed']
     );
   }
 
@@ -37,15 +38,17 @@ class Todo {
 }
 
 class TodoService extends RemoteResource {
-  @override
+  @override //Polimorfismo
   Future<void> fetch() async {
     var url = Uri.parse("https://jsonplaceholder.typicode.com/todos/1");
 
     var response = await http.get(url);
 
-    if(response.statusCode == 200) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      Todo todo = Todo.fromJson(data);
+    if(response.statusCode == 200){
+      Map<String, dynamic> data = json.decode(response.body);
+
+      Todo todo = Todo.fromJson(data); //Instanciar un objeto
+
       todo.mostrar();
     } else {
       print("Error al obtener los datos");
@@ -54,6 +57,6 @@ class TodoService extends RemoteResource {
 }
 
 Future<void> main() async {
-  TodoService service = TodoService();
-  await service.fetch();
+  TodoService todoService = TodoService();
+  await todoService.fetch();
 }
